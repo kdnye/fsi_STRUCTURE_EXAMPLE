@@ -13,7 +13,12 @@ limiter = Limiter(key_func=get_remote_address, default_limits=["200 per day", "5
 
 
 def create_app(config_overrides: dict | None = None) -> Flask:
-    app = Flask(__name__, instance_relative_config=False)
+    app = Flask(
+        __name__,
+        instance_relative_config=False,
+        template_folder="../templates",
+        static_folder="../static",
+    )
     app.config.update(get_runtime_config())
 
     if config_overrides:
