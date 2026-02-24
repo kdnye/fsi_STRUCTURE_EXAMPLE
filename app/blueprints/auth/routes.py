@@ -2,6 +2,11 @@ from flask import Blueprint, abort, g, redirect, render_template, request, sessi
 
 from app import limiter
 from app.blueprints.auth.guards import _load_current_user, require_employee_approval
+from app.rate_limits import (
+    AUTH_LOGIN_PAGE_LIMIT,
+    AUTH_LOGIN_SUBMIT_BURST_LIMIT,
+    AUTH_LOGIN_SUBMIT_LIMIT,
+)
 from models import Role, User
 
 
@@ -14,12 +19,16 @@ def attach_current_user():
 
 
 @auth_bp.get("/login")
+@limiter.limit(AUTH_LOGIN_PAGE_LIMIT)
 def login_page():
     return render_template("auth/login.html")
 
 
 @auth_bp.post("/login")
-@limiter.limit("10 per minute")
+# Route-level overrides intentionally tighten credential endpoints beyond
+# app-level defaults to reduce brute-force and burst abuse risk.
+@limiter.limit(AUTH_LOGIN_SUBMIT_LIMIT)
+@limiter.limit(AUTH_LOGIN_SUBMIT_BURST_LIMIT)
 def login_submit():
     email = request.form.get("email", "").strip().lower()
     user = User.query.filter_by(email=email).first()
