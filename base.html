@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FSI | {{ title }}</title>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/fsi.css') }}">
+    
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 
+                               (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-bs-theme', savedTheme);
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
+</head>
+<body class="fsi-body">
+
+    <nav class="fsi-navbar">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a class="navbar-brand" href="/">FSI LOGO</a>
+            
+            <div class="nav-actions d-flex align-items-center" style="gap: var(--space-6);">
+                <a href="/help" title="Support" class="help-icon">?</a>
+                <div class="dropdown">
+                    <button class="btn fsi-btn-secondary dropdown-toggle">Account</button>
+                    </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container py-4">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="fsi-footer mt-auto py-3">
+        <div class="container text-center">
+            <small class="text-muted">FSI Standard Application v1.0 | Layered Architecture</small>
+        </div>
+    </footer>
+
+</body>
+</html>
