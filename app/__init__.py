@@ -5,11 +5,17 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CSRFProtect
 
 from app.config import get_runtime_config
+from app.rate_limits import DEFAULT_DAILY_LIMIT, DEFAULT_HOURLY_LIMIT
 
 
 db = SQLAlchemy()
 csrf = CSRFProtect()
-limiter = Limiter(key_func=get_remote_address, default_limits=["200 per day", "50 per hour"])
+limiter = Limiter(
+    key_func=get_remote_address,
+    # Per-route `@limiter.limit(...)` decorators may override these broad defaults
+    # for sensitive/write-heavy endpoints (for example, auth credential routes).
+    default_limits=[DEFAULT_DAILY_LIMIT, DEFAULT_HOURLY_LIMIT],
+)
 
 
 def create_app(config_overrides: dict | None = None) -> Flask:
